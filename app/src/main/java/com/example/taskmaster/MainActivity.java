@@ -4,18 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.taskmaster.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_task_details).setOnClickListener(toTaskDetails1);
         findViewById(R.id.button_task_details1).setOnClickListener(toTaskDetails2);
         findViewById(R.id.button_task_details2).setOnClickListener(toTaskDetails3);
+
+        findViewById(R.id.task_activity).setOnClickListener(toTaskActivity);
     }
 
     public View.OnClickListener toAddTask = new View.OnClickListener() {
@@ -105,6 +101,16 @@ public class MainActivity extends AppCompatActivity {
             String title = createTaskDetails3.getText().toString();
             Intent intent = new Intent(getBaseContext(), TaskDetails.class);
             intent.putExtra(TASKTITLE, title);
+            startActivity(intent);
+
+
+        }
+    };
+
+    public View.OnClickListener toTaskActivity = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getBaseContext(), TaskActivity.class);
             startActivity(intent);
 
 
