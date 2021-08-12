@@ -16,7 +16,7 @@
     <string name="username">User Name</string>
     <string name="my_tasks">My tasks</string>
     <string name="task_title">Task Title</string>
-    <string name="task_desc">Tasc Description</string>
+    <string name="task_desc">Task Description</string>
     <string name="total">Total Tasks : 0</string>
     <string name="save">Save</string>
     <string name="go_home">Go Home</string>
