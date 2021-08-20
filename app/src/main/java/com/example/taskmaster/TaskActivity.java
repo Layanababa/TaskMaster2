@@ -1,19 +1,36 @@
 package com.example.taskmaster;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.generated.model.AmplifyModelProvider;
+import com.amplifyframework.datastore.generated.model.Task;
+
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TaskActivity extends AppCompatActivity {
+    private static final String TAG = "task";
     private List<TaskItem> taskItemList;
     private TaskAdapter adapter;
+    private Handler handler;
+
+    private List<Task> data ;
 
     public static final String TASK_TITLE = "task_title";
     public static final String TASK_BODY = "task_body";
@@ -21,31 +38,37 @@ public class TaskActivity extends AppCompatActivity {
 
     private TaskDao taskDao;
     private AppDataBase db;
+    private RecyclerView itemRecyclerView;
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, AddTask.TASK_COLLECTION).allowMainThreadQueries().build();
-
-        taskDao= db.taskDao();
-        taskItemList = taskDao.findAll();
-
         RecyclerView taskRecyclerView = findViewById(R.id.list);
 
-//        taskItemList= new ArrayList<>();
-//
-//        taskItemList.add(new TaskItem("task 1","body 1 ","complete"));
-//        taskItemList.add(new TaskItem("task 2","body 2 ","new"));
-//        taskItemList.add(new TaskItem("task 3","body 3 ","assigned"));
-//        taskItemList.add(new TaskItem("task 4","body 4 ","new"));
-//        taskItemList.add(new TaskItem("task 5","body 5 ","progress"));
-//        taskItemList.add(new TaskItem("task 6","body 6 ","progress"));
-//        taskItemList.add(new TaskItem("task 7","body 7 ","new"));
-//        taskItemList.add(new TaskItem("task 8","body 8 ","complete"));
-//        taskItemList.add(new TaskItem("task 9","body 9 ","new"));
-//        taskItemList.add(new TaskItem("task 10","body 10 ","assigned"));
+        handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                Objects.requireNonNull(taskRecyclerView.getAdapter()).notifyDataSetChanged();
+                return false;
+            }
+        });
+
+        taskItemList =  new ArrayList<>();
+//        try {
+//            taskItemList = getDataFromApi();
+//            Log.i(TAG, "onCreate: successfully"+ getDataFromApi().get(0).getTitle());
+//        }catch (Exception exception){
+//            db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, AddTask.TASK_COLLECTION).allowMainThreadQueries().build();
+//            taskDao= db.taskDao();
+//            taskItemList = taskDao.findAll();
+//            Log.i(TAG, "onCreate: data from data base");
+//        }
+        getDataFromApi() ;
+
+
 
         adapter= new TaskAdapter(taskItemList, new TaskAdapter.OnTaskItemClickListener() {
             @Override
@@ -66,5 +89,19 @@ public class TaskActivity extends AppCompatActivity {
 
     }
 
+    List<TaskItem> getDataFromApi(){
+//        List<TaskItem> taskItems= new ArrayList<>();
+        Amplify.API.query(ModelQuery.list(Task.class),
+                response -> {
+                    for (Task task: response.getData()){
+                        taskItemList.add(new TaskItem(task.getTitle(), task.getBody(), task.getState()));
+                        Log.i(TAG, "getDataFromApi: from api ");
+                    }
+                    handler.sendEmptyMessage(1);
+                },
+                error -> Log.e(TAG, "getDataFromApi: Failed ",error ));
+
+        return taskItemList;
+    }
 
 }
