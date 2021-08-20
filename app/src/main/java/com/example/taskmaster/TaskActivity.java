@@ -57,15 +57,16 @@ public class TaskActivity extends AppCompatActivity {
         });
 
         taskItemList =  new ArrayList<>();
-          try {
-              taskItemList = getDataFromApi();
-              Log.i(TAG, "onCreate: successfully"+ getDataFromApi().get(0).getTitle());
-          }catch (Exception exception){
-              db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, AddTask.TASK_COLLECTION).allowMainThreadQueries().build();
-              taskDao= db.taskDao();
-              taskItemList = taskDao.findAll();
-              Log.i(TAG, "onCreate: data from data base");
-          }
+//        try {
+//            taskItemList = getDataFromApi();
+//            Log.i(TAG, "onCreate: successfully"+ getDataFromApi().get(0).getTitle());
+//        }catch (Exception exception){
+//            db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, AddTask.TASK_COLLECTION).allowMainThreadQueries().build();
+//            taskDao= db.taskDao();
+//            taskItemList = taskDao.findAll();
+//            Log.i(TAG, "onCreate: data from data base");
+//        }
+        getDataFromApi() ;
 
 
 
@@ -88,19 +89,19 @@ public class TaskActivity extends AppCompatActivity {
 
     }
 
-     List<TaskItem> getDataFromApi(){
-        List<TaskItem> taskItems= new ArrayList<>();
+    List<TaskItem> getDataFromApi(){
+//        List<TaskItem> taskItems= new ArrayList<>();
         Amplify.API.query(ModelQuery.list(Task.class),
                 response -> {
-            for (Task task: response.getData()){
-                taskItems.add(new TaskItem(task.getTitle(), task.getBody(), task.getState()));
-                Log.i(TAG, "getDataFromApi: from api ");
-            }
-            handler.sendEmptyMessage(1);
+                    for (Task task: response.getData()){
+                        taskItemList.add(new TaskItem(task.getTitle(), task.getBody(), task.getState()));
+                        Log.i(TAG, "getDataFromApi: from api ");
+                    }
+                    handler.sendEmptyMessage(1);
                 },
                 error -> Log.e(TAG, "getDataFromApi: Failed ",error ));
 
-        return taskItems;
+        return taskItemList;
     }
 
 }

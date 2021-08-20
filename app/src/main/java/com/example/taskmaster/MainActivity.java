@@ -26,6 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final String TAG = "mainActivity";
     public static String TASKTITLE = "taskTitle";
     @Override
     protected void onResume() {
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        configureAmplify();
 //        try{
 //            Amplify.addPlugin(new AWSDataStorePlugin());
 //            Amplify.addPlugin(new AWSApiPlugin());
@@ -174,4 +176,16 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    void configureAmplify(){
+        try {
+            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.addPlugin(new AWSApiPlugin());
+            Amplify.configure(getApplicationContext());
+
+        } catch(AmplifyException exception){
+            Log.e(TAG, "onCreate: Failed to initialize Amplify plugins => " + exception.toString());
+        }
+
+    }
 }

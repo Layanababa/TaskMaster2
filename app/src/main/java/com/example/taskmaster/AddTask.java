@@ -35,14 +35,14 @@ public class AddTask extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_task);
 
-        try{
-            Amplify.addPlugin(new AWSDataStorePlugin());
-            Amplify.addPlugin(new AWSApiPlugin());
-            Amplify.configure(getApplicationContext());
-            Log.i(TAG, "onCreate: successfully initilaized amplify");
-        }catch(AmplifyException exception){
-            Log.e(TAG, "onCreate: Failed to initilaize amplify", exception);
-        }
+//        try{
+//            Amplify.addPlugin(new AWSDataStorePlugin());
+//            Amplify.addPlugin(new AWSApiPlugin());
+//            Amplify.configure(getApplicationContext());
+//            Log.i(TAG, "onCreate: successfully initilaized amplify");
+//        }catch(AmplifyException exception){
+//            Log.e(TAG, "onCreate: Failed to initilaize amplify", exception);
+//        }
 
         findViewById(R.id.button_add).setOnClickListener(new View.OnClickListener() {
             @Override
