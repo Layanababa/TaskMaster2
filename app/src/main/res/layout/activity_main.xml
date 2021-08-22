@@ -14,17 +14,31 @@
         android:text="@string/my_tasks"
         app:layout_constraintBottom_toTopOf="@id/homeusername"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.275" />
+
 
     <TextView
         android:id="@+id/homeusername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="80dp"
         android:text="@string/username"
-        app:layout_constraintTop_toBottomOf="@id/textview_first" />
+        app:layout_constraintTop_toBottomOf="@id/team"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="170dp" />
 
+    <TextView
+        android:id="@+id/team"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="@string/TeamName"
+        app:layout_constraintTop_toBottomOf="@id/textview_first"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="167dp" />
 
     <Button
         android:id="@+id/button_first"
@@ -42,7 +56,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Task Details 1"
-        app:layout_constraintTop_toBottomOf="@id/button_task_details1" />
+        app:layout_constraintTop_toBottomOf="@id/button_task_details1"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/button_task_details1"
