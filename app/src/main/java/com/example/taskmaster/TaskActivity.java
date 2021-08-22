@@ -7,19 +7,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
-import com.amplifyframework.datastore.generated.model.AmplifyModelProvider;
 import com.amplifyframework.datastore.generated.model.Task;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,15 +24,9 @@ public class TaskActivity extends AppCompatActivity {
     private TaskAdapter adapter;
     private Handler handler;
 
-    private List<Task> data ;
-
     public static final String TASK_TITLE = "task_title";
     public static final String TASK_BODY = "task_body";
     public static final String TASK_STATE = "task_state";
-
-    private TaskDao taskDao;
-    private AppDataBase db;
-    private RecyclerView itemRecyclerView;
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
@@ -57,15 +45,7 @@ public class TaskActivity extends AppCompatActivity {
         });
 
         taskItemList =  new ArrayList<>();
-//        try {
-//            taskItemList = getDataFromApi();
-//            Log.i(TAG, "onCreate: successfully"+ getDataFromApi().get(0).getTitle());
-//        }catch (Exception exception){
-//            db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, AddTask.TASK_COLLECTION).allowMainThreadQueries().build();
-//            taskDao= db.taskDao();
-//            taskItemList = taskDao.findAll();
-//            Log.i(TAG, "onCreate: data from data base");
-//        }
+
         getDataFromApi() ;
 
 
@@ -89,8 +69,7 @@ public class TaskActivity extends AppCompatActivity {
 
     }
 
-    List<TaskItem> getDataFromApi(){
-//        List<TaskItem> taskItems= new ArrayList<>();
+    void getDataFromApi(){
         Amplify.API.query(ModelQuery.list(Task.class),
                 response -> {
                     for (Task task: response.getData()){
@@ -100,8 +79,6 @@ public class TaskActivity extends AppCompatActivity {
                     handler.sendEmptyMessage(1);
                 },
                 error -> Log.e(TAG, "getDataFromApi: Failed ",error ));
-
-        return taskItemList;
     }
 
 }

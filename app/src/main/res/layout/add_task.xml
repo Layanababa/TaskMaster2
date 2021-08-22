@@ -69,9 +69,28 @@
         android:layout_height="wrap_content"
         android:inputType="text"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@id/button_add"
+        app:layout_constraintBottom_toTopOf="@id/team_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/team_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/team"
+        app:layout_constraintBottom_toTopOf="@id/team_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"/>
+    <Spinner
+        android:id="@+id/team_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/button_add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:spinnerMode="dropdown"
+        />
 
     <Button
         android:id="@+id/button_add"
