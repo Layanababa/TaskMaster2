@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         TextView userName = findViewById(R.id.homeusername);
-        userName.setText(preferences.getString("UserName","Go to settings to set the username."));
+        TextView teamName = findViewById(R.id.team);
+        userName.setText(preferences.getString("UserName","User Name"));
+        teamName.setText(preferences.getString("teamName","Team Name"));
     }
 
     @Override
@@ -43,50 +46,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         configureAmplify();
-//        try{
-//            Amplify.addPlugin(new AWSDataStorePlugin());
-//            Amplify.addPlugin(new AWSApiPlugin());
-//            Amplify.configure(getApplicationContext());
-//            Log.i(TAG, "onCreate: successfully initilaized amplify");
-//        }catch(AmplifyException exception){
-//            Log.e(TAG, "onCreate: Failed to initilaize amplify", exception);
-//        }
-
-//        Expense expenceItem = Expense.builder().("name").description("desc").build();
-
-//        local data store
-//        Amplify.DataStore.save(expenceItem,
-//                    success -> Log.i(TAG, "Saved item: " + success.item().getName()),
-//                    error -> Log.e(TAG, "Could not save item to DataStore", error)
-//                );
-//
-//        Amplify.DataStore.query(Expense.class,
-//                expenseIterator -> {
-//                    while (expenseIterator.hasNext()) {
-//                        Expense expense = expenseIterator.next();
-//
-//                        Log.i(TAG, "==== Expense ====");
-//                        Log.i(TAG, "Name: " + expense.getName());
-//
-//
-//                    }
-//                },
-//                failure -> Log.e(TAG, "Could not query DataStore", failure)
-//        );
-
-//        Amplify.API.mutate(ModelMutation.create(expenceItem),
-//                    success -> Log.i(TAG, "Saved item: " + success.getData().getName()),
-//                    error -> Log.e(TAG, "Could not save item to API/Dynamodb", error)
-//                );
-//
-//        Amplify.API.query(ModelQuery.list(Expense.class), response -> {
-//            List<Expense> expenseList =  new ArrayList<>();
-//            for(Expense expense : response.getData()){
-//                expenseList.add(expense);
-//                Log.i(TAG, "the response are => " + expense.getName());
-//            }
-//        }, error -> Log.e(TAG, "Failed to get expense => " + error.toString())
-//        );
 
         Button addTaskButton = findViewById(R.id.button_first);
         addTaskButton.setOnClickListener(toAddTask);

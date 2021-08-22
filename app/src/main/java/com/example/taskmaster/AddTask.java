@@ -54,11 +54,14 @@ public class AddTask extends AppCompatActivity {
             }
         }) ;
 
-        teams = new ArrayList<>();
-        getTeamFromApi();
+//        db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, TASK_COLLECTION).allowMainThreadQueries().build();
+//        taskDao = db.taskDao();
 
         Spinner spinner = findViewById(R.id.team_spinner);
         teamsNames = getResources().getStringArray(R.array.team_names_array);
+//        saveTeamToApi(teamsNames);
+        teams = new ArrayList<>();
+        getTeamFromApi();
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this ,
                 R.array.team_names_array, android.R.layout.simple_spinner_item
@@ -91,11 +94,11 @@ public class AddTask extends AppCompatActivity {
                 String body = inputBody.getText().toString();
                 String state = inputState.getText().toString();
 
-//                if(isNetworkAvailable(getApplicationContext())){
-//                    Log.i(TAG, "onClick: the network is available");
-//                }else {
-//                    Log.i(TAG, "onClick: net down");
-//                }
+                if(isNetworkAvailable(getApplicationContext())){
+                    Log.i(TAG, "onClick: the network is available");
+                }else {
+                    Log.i(TAG, "onClick: net down");
+                }
 
                 Team team = teams.stream().filter(team1 -> team1.getName().equals(teamName)).collect(Collectors.toList()).get(0);
                 Task task = Task.builder().title(title).body(body).state(state).team(team).build();
@@ -107,8 +110,6 @@ public class AddTask extends AppCompatActivity {
         });
 
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, TASK_COLLECTION).allowMainThreadQueries().build();
-        taskDao = db.taskDao();
 
 
     }
@@ -124,11 +125,11 @@ public class AddTask extends AppCompatActivity {
                 return task;
     }
 
-//    public boolean isNetworkAvailable(Context context){
-//        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
-//    }
+    public boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 
     List<Team> getTeamFromApi(){
         Amplify.API.query(ModelQuery.list(Team.class) ,
