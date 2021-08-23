@@ -3,6 +3,7 @@ package com.example.taskmaster;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -16,9 +17,11 @@ import com.amplifyframework.AmplifyException;
 import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Expense;
+import com.amplifyframework.datastore.generated.model.Team;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +39,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         TextView userName = findViewById(R.id.homeusername);
         TextView teamName = findViewById(R.id.team);
+        TextView acountUser = findViewById(R.id.account);
         userName.setText(preferences.getString("UserName","User Name"));
         teamName.setText(preferences.getString("teamName","Team Name"));
+        acountUser.setText(preferences.getString("UserNameSignIn","Account User Name"));
     }
 
     @Override
@@ -45,7 +50,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        configureAmplify();
+        findViewById(R.id.mainsignup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Amplify.Auth.signOut(
+                        () -> {
+                            Log.i("AuthQuickstart", "Signed out successfully");
+                            Intent intent = new Intent(getBaseContext(), SignInActivity.class);
+                            startActivity(intent);
+
+                        },
+                        error -> {
+                           Log.e("AuthQuickstart", error.toString());
+                        }
+
+                );
+            }
+        });
 
         Button addTaskButton = findViewById(R.id.button_first);
         addTaskButton.setOnClickListener(toAddTask);
@@ -136,15 +157,5 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    void configureAmplify(){
-        try {
-            Amplify.addPlugin(new AWSDataStorePlugin());
-            Amplify.addPlugin(new AWSApiPlugin());
-            Amplify.configure(getApplicationContext());
 
-        } catch(AmplifyException exception){
-            Log.e(TAG, "onCreate: Failed to initialize Amplify plugins => " + exception.toString());
-        }
-
-    }
 }
