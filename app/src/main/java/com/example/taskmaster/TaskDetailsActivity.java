@@ -1,7 +1,9 @@
 package com.example.taskmaster;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,5 +30,16 @@ public class TaskDetailsActivity extends AppCompatActivity {
         titleTextView.setText(title);
         bodyTextView.setText(body);
         stateTextView.setText(state);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        TextView fileName = findViewById(R.id.File_details);
+
+        fileName.setText(preferences.getString("FileName","File Name"));
+
     }
 }
