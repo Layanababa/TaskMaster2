@@ -20,6 +20,7 @@ import java.util.Objects;
 
 public class TaskActivity extends AppCompatActivity {
     private static final String TAG = "task";
+    private static final String K_STATE ="" ;
     private List<TaskItem> taskItemList;
     private TaskAdapter adapter;
     private Handler handler;

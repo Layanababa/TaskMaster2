@@ -9,6 +9,7 @@ type Task @model @key(name: "taskItem", fields: ["taskID"]){
   title : String!
   body : String!
   state : String!
+  fileName : String
   taskID: ID!
   team: Team! @connection(fields: ["taskID"])
 }

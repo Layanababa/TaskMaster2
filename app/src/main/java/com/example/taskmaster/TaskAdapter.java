@@ -52,12 +52,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         private TextView body;
         private TextView state;
 
+
         public ViewHolder(@NonNull  View itemView, OnTaskItemClickListener listener ) {
             super(itemView);
 
             title=itemView.findViewById(R.id.task_title);
             body=itemView.findViewById(R.id.task_body);
             state=itemView.findViewById(R.id.task_state);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
