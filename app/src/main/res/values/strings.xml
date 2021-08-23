@@ -25,6 +25,7 @@
     <string name="title_activity_task_details">TaskDetailsActivity</string>
     <string name="team">Team</string>
     <string name="TeamName">Team Name</string>
+    <string name="account">Account</string>
 
     <string-array name="team_names_array">
         <item>Team 1</item>
