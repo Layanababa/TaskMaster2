@@ -11,12 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.amplifyframework.analytics.AnalyticsEvent;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class TaskActivity extends AppCompatActivity {
     private static final String TAG = "task";
@@ -58,6 +62,7 @@ public class TaskActivity extends AppCompatActivity {
                 intent.putExtra(TASK_TITLE, taskItemList.get(position).getTitle());
                 intent.putExtra(TASK_BODY, taskItemList.get(position).getBody());
                 intent.putExtra(TASK_STATE, taskItemList.get(position).getState());
+                recordAnEvent("NavigateToTaskDetailssActivity");
 
                 startActivity(intent);
             }
@@ -80,6 +85,21 @@ public class TaskActivity extends AppCompatActivity {
                     handler.sendEmptyMessage(1);
                 },
                 error -> Log.e(TAG, "getDataFromApi: Failed ",error ));
+    }
+
+    private void recordAnEvent(String eventName){
+        Random random = new Random();
+        Integer randomAge = random.nextInt(50) + 15;
+        AnalyticsEvent event = AnalyticsEvent.builder()
+                .name(eventName)
+                .addProperty("Channel", "SMS")
+                .addProperty("Successful", true)
+                .addProperty("ProcessDuration", 792)
+                .addProperty("UserAge", randomAge)
+                .addProperty("Date" , String.valueOf(new Date()))
+                .build();
+
+        Amplify.Analytics.recordEvent(event);
     }
 
 }

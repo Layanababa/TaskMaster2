@@ -22,6 +22,7 @@ import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.pinpoint.PinpointConfiguration;
 import com.amazonaws.mobileconnectors.pinpoint.PinpointManager;
 import com.amplifyframework.AmplifyException;
+import com.amplifyframework.analytics.AnalyticsEvent;
 import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
@@ -35,7 +36,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -141,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getBaseContext(), AddTask.class);
+            recordAnEvent("NavigateToSignInActivity");
             startActivity(intent);
         }
     };
@@ -149,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getBaseContext(), AllTask.class);
+            recordAnEvent("NavigateToSignInActivity");
             startActivity(intent);
         }
     };
@@ -157,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+            recordAnEvent("NavigateToSignInActivity");
             startActivity(intent);
 
 
@@ -206,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getBaseContext(), TaskActivity.class);
+            recordAnEvent("NavigateToSignInActivity");
             startActivity(intent);
 
 
@@ -213,4 +220,18 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    private void recordAnEvent(String eventName){
+        Random random = new Random();
+        Integer randomAge = random.nextInt(50) + 15;
+        AnalyticsEvent event = AnalyticsEvent.builder()
+                .name(eventName)
+                .addProperty("Channel", "SMS")
+                .addProperty("Successful", true)
+                .addProperty("ProcessDuration", 792)
+                .addProperty("UserAge", randomAge)
+                .addProperty("Date" , String.valueOf(new Date()))
+                .build();
+
+        Amplify.Analytics.recordEvent(event);
+    }
 }
