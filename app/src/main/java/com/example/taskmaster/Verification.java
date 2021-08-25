@@ -12,7 +12,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.amplifyframework.analytics.AnalyticsEvent;
 import com.amplifyframework.core.Amplify;
+
+import java.util.Date;
+import java.util.Random;
 
 public class Verification extends AppCompatActivity {
     private static final String TAG = "verification";
@@ -49,9 +53,25 @@ public class Verification extends AppCompatActivity {
                     Log.i(TAG, "your account has been confirmed successfully --> " + success.toString());
                     handler.sendEmptyMessage(1);
                     Intent intent = new Intent(getApplicationContext() , MainActivity.class);
+                    recordAnEvent("NavigateToSignInActivity");
                     startActivity(intent);
                 } ,
                 failure -> Log.i(TAG, "failed to verificate the account --> " + failure.toString())
         );
+    }
+
+    private void recordAnEvent(String eventName){
+        Random random = new Random();
+        Integer randomAge = random.nextInt(50) + 15;
+        AnalyticsEvent event = AnalyticsEvent.builder()
+                .name(eventName)
+                .addProperty("Channel", "SMS")
+                .addProperty("Successful", true)
+                .addProperty("ProcessDuration", 792)
+                .addProperty("UserAge", randomAge)
+                .addProperty("Date" , String.valueOf(new Date()))
+                .build();
+
+        Amplify.Analytics.recordEvent(event);
     }
 }

@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.amplifyframework.AmplifyException;
+import com.amplifyframework.analytics.AnalyticsEvent;
+import com.amplifyframework.analytics.pinpoint.AWSPinpointAnalyticsPlugin;
 import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.auth.AuthUserAttributeKey;
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
@@ -22,6 +24,9 @@ import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin;
+
+import java.util.Date;
+import java.util.Random;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -44,6 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }) ;
 
+
         findViewById(R.id.btnsignup).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +65,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext() , Verification.class);
                 intent.putExtra("username", username);
+                recordAnEvent("NavigateToSignInActivity");
                 startActivity(intent);
 
                 preferenceEditor.putString("UserNameSignIn", username);
@@ -72,6 +79,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext() , SignInActivity.class);
+                recordAnEvent("NavigateToSignInActivity");
                 startActivity(intent);
             }
         });
@@ -95,11 +103,26 @@ public class SignUpActivity extends AppCompatActivity {
             Amplify.addPlugin(new AWSDataStorePlugin());
             Amplify.addPlugin(new AWSApiPlugin());
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
+            Amplify.addPlugin(new AWSPinpointAnalyticsPlugin(getApplication()));
             Amplify.addPlugin(new AWSS3StoragePlugin());
             Amplify.configure(getApplicationContext());
         } catch(AmplifyException exception){
             Log.e((String) TAG, "onCreate: Failed to initialize Amplify plugins => " + exception.toString());
         }
 
+    }
+    public void recordAnEvent(String eventName) {
+        Random random = new Random();
+        Integer randomAge = random.nextInt(50) + 15;
+        AnalyticsEvent event = AnalyticsEvent.builder()
+                .name(eventName)
+                .addProperty("Channel", "SMS")
+                .addProperty("Successful", true)
+                .addProperty("ProcessDuration", 792)
+                .addProperty("UserAge", randomAge)
+                .addProperty("Date", String.valueOf(new Date()))
+                .build();
+
+        Amplify.Analytics.recordEvent(event);
     }
 }

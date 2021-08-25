@@ -44,8 +44,8 @@ public class AddTask extends AppCompatActivity {
     private static final String TAG = "addtask";
     public static final String TASK_COLLECTION = "task_collection";
     private static final int REQUEST_FOR_FILE = 999;
-    private TaskDao taskDao;
-    private AppDataBase db;
+//    private TaskDao taskDao;
+//    private AppDataBase db;
     private List<Team> teams;
     private ArrayAdapter<String> teamAdapter;
     private String[] teamsNames ;
