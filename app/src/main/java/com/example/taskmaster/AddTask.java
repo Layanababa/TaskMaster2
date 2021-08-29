@@ -1,8 +1,12 @@
 package com.example.taskmaster;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.FileUtils;
@@ -10,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,6 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
@@ -44,7 +51,7 @@ public class AddTask extends AppCompatActivity {
     private static final String TAG = "addtask";
     public static final String TASK_COLLECTION = "task_collection";
     private static final int REQUEST_FOR_FILE = 999;
-//    private TaskDao taskDao;
+    //    private TaskDao taskDao;
 //    private AppDataBase db;
     private List<Team> teams;
     private ArrayAdapter<String> teamAdapter;
@@ -55,6 +62,7 @@ public class AddTask extends AppCompatActivity {
     private String fileName;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +70,19 @@ public class AddTask extends AppCompatActivity {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor preferenceEditor = preferences.edit();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type   = intent.getType();
+
+        if (type != null)
+            if (type.equals("image/*"))
+                sendImage(intent) ;
+
 
         handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
             @Override
@@ -183,50 +204,39 @@ public class AddTask extends AppCompatActivity {
         startActivityForResult(chooseFile, REQUEST_FOR_FILE); // deprecated
     }
 
-//    private void getFileFromS3Storage() {
-//        Amplify.Storage.downloadFile(
-//                "uploadFile",
-//                new File(),
+
+//    private void uploadFileToS3() {
+//        File testFile = new File(getApplicationContext().getFilesDir(), "test");
+//
+//        try {
+//            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(testFile));
+//            bufferedWriter.append("This is a test file to demonstrate S3 functionality");
+//            bufferedWriter.close();
+//        } catch (Exception exception) {
+//            Log.e(TAG, "uploadFileToS3: failed" + exception.toString());
+//        }
+//
+//        Amplify.Storage.uploadFile(
+//                "test",
+//                testFile,
 //                success -> {
-//                    // displaying in an image view
-//                    success.getFile();
+//                    Log.i(TAG, "uploadFileToS3: succeeded " + success.getKey());
 //                },
-//                error -> {}
+//                error -> {
+//                    Log.e(TAG, "uploadFileToS3: failed " + error.toString());
+//                }
 //        );
 //    }
 
-    private void uploadFileToS3() {
-        File testFile = new File(getApplicationContext().getFilesDir(), "test");
-
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(testFile));
-            bufferedWriter.append("This is a test file to demonstrate S3 functionality");
-            bufferedWriter.close();
-        } catch (Exception exception) {
-            Log.e(TAG, "uploadFileToS3: failed" + exception.toString());
-        }
-
-        Amplify.Storage.uploadFile(
-                "test",
-                testFile,
+    Task saveTaskToAPI (Task task){
+        Amplify.API.mutate(ModelMutation.create(task),
                 success -> {
-                    Log.i(TAG, "uploadFileToS3: succeeded " + success.getKey());
-                },
-                error -> {
-                    Log.e(TAG, "uploadFileToS3: failed " + error.toString());
-                }
-        );
-    }
-
-     Task saveTaskToAPI (Task task){
-                Amplify.API.mutate(ModelMutation.create(task),
-                    success -> {
                     Log.i(TAG, "Saved item: " + success.getData().getTitle ());
                     handler.sendEmptyMessage(1);
-                    },
-                    error -> Log.e(TAG, "Could not save item to API/Dynamodb", error)
-                );
-                return task;
+                },
+                error -> Log.e(TAG, "Could not save item to API/Dynamodb", error)
+        );
+        return task;
     }
 
     public boolean isNetworkAvailable(Context context){
@@ -245,7 +255,7 @@ public class AddTask extends AppCompatActivity {
                 },
 
                 error -> Log.i(TAG, "failed to getTeamFromApi: Team Name -->" + error)
-                );
+        );
         return teams ;
     }
 
@@ -259,5 +269,50 @@ public class AddTask extends AppCompatActivity {
         }
 
 
-   }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void sendImage(Intent intent) {
+        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        String path = getPathFromUri( getApplicationContext(), imageUri) ;
+        Log.i(TAG, "sendImage: path" + path);
+        path = path.replace(" " , "");
+        File uploadFile = new File(path);
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(intent.getData());
+            FileUtils.copy(inputStream , new FileOutputStream(uploadFile));
+
+        } catch(Exception exception){
+            Log.i(TAG, "sendImage: called" + path);
+        }
+
+        uploadFileToS3(uploadFile);
+    }
+
+    String getPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private void uploadFileToS3(File uploadFile){
+
+        String key =String.format("defaultTask%s.jpg" , new Date().getTime());
+
+        Amplify.Storage.uploadFile(
+                key,
+                uploadFile ,
+                success -> Log.i(TAG, "uploadFileToS3: succeeded " + success.getKey()) ,
+                failure -> Log.e(TAG, "uploadFileToS3: failed " + failure.toString())
+        );
+    }
 }

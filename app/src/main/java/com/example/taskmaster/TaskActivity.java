@@ -2,6 +2,7 @@ package com.example.taskmaster;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,8 @@ import com.amplifyframework.analytics.AnalyticsEvent;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,20 +43,18 @@ public class TaskActivity extends AppCompatActivity {
 
         RecyclerView taskRecyclerView = findViewById(R.id.list);
 
-        handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public boolean handleMessage(@NonNull Message msg) {
-                Objects.requireNonNull(taskRecyclerView.getAdapter()).notifyDataSetChanged();
-                return false;
-            }
-        });
+//                        Intent sendIntent = new Intent();
+//                sendIntent.setAction(Intent.ACTION_SEND);
+//                sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+//                sendIntent.setType("text/plain");
+//                sendIntent.setType("image/*");
+//
+//                Intent shareIntent = Intent.createChooser(sendIntent, null);
+//                startActivity(shareIntent);
 
         taskItemList =  new ArrayList<>();
 
         getDataFromApi() ;
-
-
 
         adapter= new TaskAdapter(taskItemList, new TaskAdapter.OnTaskItemClickListener() {
             @Override

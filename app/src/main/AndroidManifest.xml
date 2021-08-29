@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -26,11 +27,21 @@
         
         <activity android:name=".SignInActivity" />
         <activity android:name=".MainActivity"/>
-        <activity android:name=".AddTask" />
+        <activity android:name=".AddTask"
+            android:exported="true">
+            <intent-filter >
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
         <activity android:name=".AllTask" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".TaskDetails" />
-        <activity android:name=".TaskActivity" />
+        <activity
+            android:name=".TaskActivity"/>
+
+
         <activity android:name=".TaskDetailsActivity" />
         <activity
             android:name=".SignUpActivity"
