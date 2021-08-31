@@ -27,13 +27,19 @@ public final class Task implements Model {
   public static final QueryField BODY = field("Task", "body");
   public static final QueryField STATE = field("Task", "state");
   public static final QueryField FILE_NAME = field("Task", "fileName");
+  public static final QueryField LOCATION = field("Task", "location");
+  public static final QueryField LOCATION_LAT = field("Task", "location_lat");
+  public static final QueryField LOCATION_LON = field("Task", "location_lon");
   public static final QueryField TEAM = field("Task", "taskID");
   private final @ModelField(targetType="ID", isRequired = true) String id;
-  private final @ModelField(targetType="String", isRequired = true) String title;
-  private final @ModelField(targetType="String", isRequired = true) String body;
-  private final @ModelField(targetType="String", isRequired = true) String state;
+  private final @ModelField(targetType="String") String title;
+  private final @ModelField(targetType="String") String body;
+  private final @ModelField(targetType="String") String state;
   private final @ModelField(targetType="String") String fileName;
-  private final @ModelField(targetType="Team", isRequired = true) @BelongsTo(targetName = "taskID", type = Team.class) Team team;
+  private final @ModelField(targetType="String") String location;
+  private final @ModelField(targetType="String") String location_lat;
+  private final @ModelField(targetType="String") String location_lon;
+  private final @ModelField(targetType="Team") @BelongsTo(targetName = "taskID", type = Team.class) Team team;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String getId() {
@@ -56,6 +62,18 @@ public final class Task implements Model {
       return fileName;
   }
   
+  public String getLocation() {
+      return location;
+  }
+  
+  public String getLocationLat() {
+      return location_lat;
+  }
+  
+  public String getLocationLon() {
+      return location_lon;
+  }
+  
   public Team getTeam() {
       return team;
   }
@@ -68,12 +86,15 @@ public final class Task implements Model {
       return updatedAt;
   }
   
-  private Task(String id, String title, String body, String state, String fileName, Team team) {
+  private Task(String id, String title, String body, String state, String fileName, String location, String location_lat, String location_lon, Team team) {
     this.id = id;
     this.title = title;
     this.body = body;
     this.state = state;
     this.fileName = fileName;
+    this.location = location;
+    this.location_lat = location_lat;
+    this.location_lon = location_lon;
     this.team = team;
   }
   
@@ -90,6 +111,9 @@ public final class Task implements Model {
               ObjectsCompat.equals(getBody(), task.getBody()) &&
               ObjectsCompat.equals(getState(), task.getState()) &&
               ObjectsCompat.equals(getFileName(), task.getFileName()) &&
+              ObjectsCompat.equals(getLocation(), task.getLocation()) &&
+              ObjectsCompat.equals(getLocationLat(), task.getLocationLat()) &&
+              ObjectsCompat.equals(getLocationLon(), task.getLocationLon()) &&
               ObjectsCompat.equals(getTeam(), task.getTeam()) &&
               ObjectsCompat.equals(getCreatedAt(), task.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), task.getUpdatedAt());
@@ -104,6 +128,9 @@ public final class Task implements Model {
       .append(getBody())
       .append(getState())
       .append(getFileName())
+      .append(getLocation())
+      .append(getLocationLat())
+      .append(getLocationLon())
       .append(getTeam())
       .append(getCreatedAt())
       .append(getUpdatedAt())
@@ -120,6 +147,9 @@ public final class Task implements Model {
       .append("body=" + String.valueOf(getBody()) + ", ")
       .append("state=" + String.valueOf(getState()) + ", ")
       .append("fileName=" + String.valueOf(getFileName()) + ", ")
+      .append("location=" + String.valueOf(getLocation()) + ", ")
+      .append("location_lat=" + String.valueOf(getLocationLat()) + ", ")
+      .append("location_lon=" + String.valueOf(getLocationLon()) + ", ")
       .append("team=" + String.valueOf(getTeam()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
@@ -127,7 +157,7 @@ public final class Task implements Model {
       .toString();
   }
   
-  public static TitleStep builder() {
+  public static BuildStep builder() {
       return new Builder();
   }
   
@@ -156,6 +186,9 @@ public final class Task implements Model {
       null,
       null,
       null,
+      null,
+      null,
+      null,
       null
     );
   }
@@ -166,42 +199,35 @@ public final class Task implements Model {
       body,
       state,
       fileName,
+      location,
+      location_lat,
+      location_lon,
       team);
   }
-  public interface TitleStep {
-    BodyStep title(String title);
-  }
-  
-
-  public interface BodyStep {
-    StateStep body(String body);
-  }
-  
-
-  public interface StateStep {
-    TeamStep state(String state);
-  }
-  
-
-  public interface TeamStep {
+  public interface BuildStep {
+    Task build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep title(String title);
+    BuildStep body(String body);
+    BuildStep state(String state);
+    BuildStep fileName(String fileName);
+    BuildStep location(String location);
+    BuildStep locationLat(String locationLat);
+    BuildStep locationLon(String locationLon);
     BuildStep team(Team team);
   }
   
 
-  public interface BuildStep {
-    Task build();
-    BuildStep id(String id) throws IllegalArgumentException;
-    BuildStep fileName(String fileName);
-  }
-  
-
-  public static class Builder implements TitleStep, BodyStep, StateStep, TeamStep, BuildStep {
+  public static class Builder implements BuildStep {
     private String id;
     private String title;
     private String body;
     private String state;
-    private Team team;
     private String fileName;
+    private String location;
+    private String location_lat;
+    private String location_lon;
+    private Team team;
     @Override
      public Task build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -212,40 +238,57 @@ public final class Task implements Model {
           body,
           state,
           fileName,
+          location,
+          location_lat,
+          location_lon,
           team);
     }
     
     @Override
-     public BodyStep title(String title) {
-        Objects.requireNonNull(title);
+     public BuildStep title(String title) {
         this.title = title;
         return this;
     }
     
     @Override
-     public StateStep body(String body) {
-        Objects.requireNonNull(body);
+     public BuildStep body(String body) {
         this.body = body;
         return this;
     }
     
     @Override
-     public TeamStep state(String state) {
-        Objects.requireNonNull(state);
+     public BuildStep state(String state) {
         this.state = state;
-        return this;
-    }
-    
-    @Override
-     public BuildStep team(Team team) {
-        Objects.requireNonNull(team);
-        this.team = team;
         return this;
     }
     
     @Override
      public BuildStep fileName(String fileName) {
         this.fileName = fileName;
+        return this;
+    }
+    
+    @Override
+     public BuildStep location(String location) {
+        this.location = location;
+        return this;
+    }
+    
+    @Override
+     public BuildStep locationLat(String locationLat) {
+        this.location_lat = locationLat;
+        return this;
+    }
+    
+    @Override
+     public BuildStep locationLon(String locationLon) {
+        this.location_lon = locationLon;
+        return this;
+    }
+    
+    @Override
+     public BuildStep team(Team team) {
+        this.team = team;
         return this;
     }
     
@@ -272,13 +315,16 @@ public final class Task implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String title, String body, String state, String fileName, Team team) {
+    private CopyOfBuilder(String id, String title, String body, String state, String fileName, String location, String locationLat, String locationLon, Team team) {
       super.id(id);
       super.title(title)
         .body(body)
         .state(state)
-        .team(team)
-        .fileName(fileName);
+        .fileName(fileName)
+        .location(location)
+        .locationLat(locationLat)
+        .locationLon(locationLon)
+        .team(team);
     }
     
     @Override
@@ -297,13 +343,28 @@ public final class Task implements Model {
     }
     
     @Override
-     public CopyOfBuilder team(Team team) {
-      return (CopyOfBuilder) super.team(team);
+     public CopyOfBuilder fileName(String fileName) {
+      return (CopyOfBuilder) super.fileName(fileName);
     }
     
     @Override
-     public CopyOfBuilder fileName(String fileName) {
-      return (CopyOfBuilder) super.fileName(fileName);
+     public CopyOfBuilder location(String location) {
+      return (CopyOfBuilder) super.location(location);
+    }
+    
+    @Override
+     public CopyOfBuilder locationLat(String locationLat) {
+      return (CopyOfBuilder) super.locationLat(locationLat);
+    }
+    
+    @Override
+     public CopyOfBuilder locationLon(String locationLon) {
+      return (CopyOfBuilder) super.locationLon(locationLon);
+    }
+    
+    @Override
+     public CopyOfBuilder team(Team team) {
+      return (CopyOfBuilder) super.team(team);
     }
   }
   
