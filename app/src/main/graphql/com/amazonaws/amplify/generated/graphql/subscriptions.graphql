@@ -55,6 +55,8 @@ subscription OnCreateTask {
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
@@ -82,6 +84,8 @@ subscription OnUpdateTask {
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
@@ -109,6 +113,8 @@ subscription OnDeleteTask {
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt

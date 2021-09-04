@@ -79,6 +79,8 @@ query SyncTasks(
       location_lat
       location_lon
       taskID
+      longitude
+      latitude
       _version
       _deleted
       _lastChangedAt
@@ -109,6 +111,8 @@ query GetTask($id: ID!) {
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
@@ -132,6 +136,8 @@ query ListTasks(
       location_lat
       location_lon
       taskID
+      longitude
+      latitude
       _version
       _deleted
       _lastChangedAt

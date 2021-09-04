@@ -67,6 +67,8 @@ mutation CreateTask(
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
@@ -97,6 +99,8 @@ mutation UpdateTask(
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
@@ -127,6 +131,8 @@ mutation DeleteTask(
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
