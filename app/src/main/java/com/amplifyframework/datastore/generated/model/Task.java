@@ -28,12 +28,16 @@ public final class Task implements Model {
   public static final QueryField STATE = field("Task", "state");
   public static final QueryField FILE_NAME = field("Task", "fileName");
   public static final QueryField TEAM = field("Task", "taskID");
+  public static final QueryField LONGITUDE = field("Task", "longitude");
+  public static final QueryField LATITUDE = field("Task", "latitude");
   private final @ModelField(targetType="ID", isRequired = true) String id;
-  private final @ModelField(targetType="String", isRequired = true) String title;
-  private final @ModelField(targetType="String", isRequired = true) String body;
-  private final @ModelField(targetType="String", isRequired = true) String state;
+  private final @ModelField(targetType="String") String title;
+  private final @ModelField(targetType="String") String body;
+  private final @ModelField(targetType="String") String state;
   private final @ModelField(targetType="String") String fileName;
-  private final @ModelField(targetType="Team", isRequired = true) @BelongsTo(targetName = "taskID", type = Team.class) Team team;
+  private final @ModelField(targetType="Team") @BelongsTo(targetName = "taskID", type = Team.class) Team team;
+  private final @ModelField(targetType="String") String longitude;
+  private final @ModelField(targetType="String") String latitude;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String getId() {
@@ -60,6 +64,14 @@ public final class Task implements Model {
       return team;
   }
   
+  public String getLongitude() {
+      return longitude;
+  }
+  
+  public String getLatitude() {
+      return latitude;
+  }
+  
   public Temporal.DateTime getCreatedAt() {
       return createdAt;
   }
@@ -68,13 +80,15 @@ public final class Task implements Model {
       return updatedAt;
   }
   
-  private Task(String id, String title, String body, String state, String fileName, Team team) {
+  private Task(String id, String title, String body, String state, String fileName, Team team, String longitude, String latitude) {
     this.id = id;
     this.title = title;
     this.body = body;
     this.state = state;
     this.fileName = fileName;
     this.team = team;
+    this.longitude = longitude;
+    this.latitude = latitude;
   }
   
   @Override
@@ -91,6 +105,8 @@ public final class Task implements Model {
               ObjectsCompat.equals(getState(), task.getState()) &&
               ObjectsCompat.equals(getFileName(), task.getFileName()) &&
               ObjectsCompat.equals(getTeam(), task.getTeam()) &&
+              ObjectsCompat.equals(getLongitude(), task.getLongitude()) &&
+              ObjectsCompat.equals(getLatitude(), task.getLatitude()) &&
               ObjectsCompat.equals(getCreatedAt(), task.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), task.getUpdatedAt());
       }
@@ -105,6 +121,8 @@ public final class Task implements Model {
       .append(getState())
       .append(getFileName())
       .append(getTeam())
+      .append(getLongitude())
+      .append(getLatitude())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -121,13 +139,15 @@ public final class Task implements Model {
       .append("state=" + String.valueOf(getState()) + ", ")
       .append("fileName=" + String.valueOf(getFileName()) + ", ")
       .append("team=" + String.valueOf(getTeam()) + ", ")
+      .append("longitude=" + String.valueOf(getLongitude()) + ", ")
+      .append("latitude=" + String.valueOf(getLatitude()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
       .toString();
   }
   
-  public static TitleStep builder() {
+  public static BuildStep builder() {
       return new Builder();
   }
   
@@ -156,6 +176,8 @@ public final class Task implements Model {
       null,
       null,
       null,
+      null,
+      null,
       null
     );
   }
@@ -166,42 +188,32 @@ public final class Task implements Model {
       body,
       state,
       fileName,
-      team);
+      team,
+      longitude,
+      latitude);
   }
-  public interface TitleStep {
-    BodyStep title(String title);
-  }
-  
-
-  public interface BodyStep {
-    StateStep body(String body);
-  }
-  
-
-  public interface StateStep {
-    TeamStep state(String state);
-  }
-  
-
-  public interface TeamStep {
-    BuildStep team(Team team);
-  }
-  
-
   public interface BuildStep {
     Task build();
     BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep title(String title);
+    BuildStep body(String body);
+    BuildStep state(String state);
     BuildStep fileName(String fileName);
+    BuildStep team(Team team);
+    BuildStep longitude(String longitude);
+    BuildStep latitude(String latitude);
   }
   
 
-  public static class Builder implements TitleStep, BodyStep, StateStep, TeamStep, BuildStep {
+  public static class Builder implements BuildStep {
     private String id;
     private String title;
     private String body;
     private String state;
-    private Team team;
     private String fileName;
+    private Team team;
+    private String longitude;
+    private String latitude;
     @Override
      public Task build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -212,40 +224,50 @@ public final class Task implements Model {
           body,
           state,
           fileName,
-          team);
+          team,
+          longitude,
+          latitude);
     }
     
     @Override
-     public BodyStep title(String title) {
-        Objects.requireNonNull(title);
+     public BuildStep title(String title) {
         this.title = title;
         return this;
     }
     
     @Override
-     public StateStep body(String body) {
-        Objects.requireNonNull(body);
+     public BuildStep body(String body) {
         this.body = body;
         return this;
     }
     
     @Override
-     public TeamStep state(String state) {
-        Objects.requireNonNull(state);
+     public BuildStep state(String state) {
         this.state = state;
-        return this;
-    }
-    
-    @Override
-     public BuildStep team(Team team) {
-        Objects.requireNonNull(team);
-        this.team = team;
         return this;
     }
     
     @Override
      public BuildStep fileName(String fileName) {
         this.fileName = fileName;
+        return this;
+    }
+    
+    @Override
+     public BuildStep team(Team team) {
+        this.team = team;
+        return this;
+    }
+    
+    @Override
+     public BuildStep longitude(String longitude) {
+        this.longitude = longitude;
+        return this;
+    }
+    
+    @Override
+     public BuildStep latitude(String latitude) {
+        this.latitude = latitude;
         return this;
     }
     
@@ -272,13 +294,15 @@ public final class Task implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String title, String body, String state, String fileName, Team team) {
+    private CopyOfBuilder(String id, String title, String body, String state, String fileName, Team team, String longitude, String latitude) {
       super.id(id);
       super.title(title)
         .body(body)
         .state(state)
+        .fileName(fileName)
         .team(team)
-        .fileName(fileName);
+        .longitude(longitude)
+        .latitude(latitude);
     }
     
     @Override
@@ -297,13 +321,23 @@ public final class Task implements Model {
     }
     
     @Override
+     public CopyOfBuilder fileName(String fileName) {
+      return (CopyOfBuilder) super.fileName(fileName);
+    }
+    
+    @Override
      public CopyOfBuilder team(Team team) {
       return (CopyOfBuilder) super.team(team);
     }
     
     @Override
-     public CopyOfBuilder fileName(String fileName) {
-      return (CopyOfBuilder) super.fileName(fileName);
+     public CopyOfBuilder longitude(String longitude) {
+      return (CopyOfBuilder) super.longitude(longitude);
+    }
+    
+    @Override
+     public CopyOfBuilder latitude(String latitude) {
+      return (CopyOfBuilder) super.latitude(latitude);
     }
   }
   

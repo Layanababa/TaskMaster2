@@ -6,16 +6,25 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+
 
 public class TaskDetailsActivity extends AppCompatActivity {
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_details_activity);
+
+
 
         Intent intent = getIntent();
 
@@ -42,4 +51,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
         fileName.setText(preferences.getString("FileName","File Name"));
 
     }
+
+
 }

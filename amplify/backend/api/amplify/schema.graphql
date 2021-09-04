@@ -6,12 +6,14 @@ type Todo @model {
 
 type Task @model @key(name: "taskItem", fields: ["taskID"]){
   id : ID!
-  title : String!
-  body : String!
-  state : String!
+  title : String
+  body : String
+  state : String
   fileName : String
   taskID: ID!
-  team: Team! @connection(fields: ["taskID"])
+  team: Team @connection(fields: ["taskID"])
+  longitude: String
+  latitude: String
 }
 
 type Team @model{

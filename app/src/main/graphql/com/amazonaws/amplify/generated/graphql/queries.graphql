@@ -76,6 +76,8 @@ query SyncTasks(
       state
       fileName
       taskID
+      longitude
+      latitude
       _version
       _deleted
       _lastChangedAt
@@ -103,6 +105,8 @@ query GetTask($id: ID!) {
       createdAt
       updatedAt
     }
+    longitude
+    latitude
     _version
     _deleted
     _lastChangedAt
@@ -123,6 +127,8 @@ query ListTasks(
       state
       fileName
       taskID
+      longitude
+      latitude
       _version
       _deleted
       _lastChangedAt
