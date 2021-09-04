@@ -42,6 +42,9 @@ subscription OnCreateTask {
     body
     state
     fileName
+    location
+    location_lat
+    location_lon
     taskID
     team {
       id
@@ -68,6 +71,9 @@ subscription OnUpdateTask {
     body
     state
     fileName
+    location
+    location_lat
+    location_lon
     taskID
     team {
       id
@@ -94,6 +100,9 @@ subscription OnDeleteTask {
     body
     state
     fileName
+    location
+    location_lat
+    location_lon
     taskID
     team {
       id

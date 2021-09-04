@@ -54,6 +54,9 @@ mutation CreateTask(
     body
     state
     fileName
+    location
+    location_lat
+    location_lon
     taskID
     team {
       id
@@ -83,6 +86,9 @@ mutation UpdateTask(
     body
     state
     fileName
+    location
+    location_lat
+    location_lon
     taskID
     team {
       id
@@ -112,6 +118,9 @@ mutation DeleteTask(
     body
     state
     fileName
+    location
+    location_lat
+    location_lon
     taskID
     team {
       id

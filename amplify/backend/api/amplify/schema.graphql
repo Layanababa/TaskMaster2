@@ -10,10 +10,14 @@ type Task @model @key(name: "taskItem", fields: ["taskID"]){
   body : String
   state : String
   fileName : String
+  location : String
+  location_lat: String
+  location_lon :String
   taskID: ID!
   team: Team @connection(fields: ["taskID"])
   longitude: String
   latitude: String
+
 }
 
 type Team @model{
